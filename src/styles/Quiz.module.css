@@ -1,0 +1,125 @@
+.container {
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.timer {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.timerBar {
+  width: 100%;
+  height: 6px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.timerBarFill {
+  height: 100%;
+  background: #4a90e2;
+  transition: width 0.5s linear;
+}
+
+.questionImage {
+  width: 340px;
+  max-width: 100%;
+  margin: 18px 0;
+  border-radius: 12px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 17px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74,144,226,0.2);
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 14px;
+}
+
+.primary {
+  background: #4a90e2;
+  color: white;
+}
+
+.secondary {
+  background: #ddd;
+}
+
+.hintBox {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #f6f6f6;
+  border-radius: 10px;
+  font-style: italic;
+}
+
+/* Overlay */
+.overlay {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlayBox {
+  background: white;
+  padding: 30px 50px;
+  border-radius: 14px;
+  font-size: 30px;
+  font-weight: 700;
+  animation: pop 0.3s ease-out;
+}
+
+/* Correct */
+.correct {
+  color: #3aba3a;
+  text-shadow: 0 0 8px rgba(0,255,0,0.4);
+}
+
+/* Wrong */
+.wrong {
+  color: #e74c3c;
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-6px); }
+  100% { transform: translateX(0); }
+}
+
+

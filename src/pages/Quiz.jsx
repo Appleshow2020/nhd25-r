@@ -1,36 +1,35 @@
 import { useState, useEffect } from "react";
 import { questions } from "../data/questions";
+import { useLocation, useNavigate } from "react-router-dom";
+import styles from "../styles/Quiz.module.css";
 
 function shuffle(arr) {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
 export default function Quiz() {
-  const TOTAL_TIME = 480; // 8분
+  const TOTAL_TIME = 480;
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
 
   const [quizList, setQuizList] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [effectType, setEffectType] = useState(null); // "correct" | "wrong" | null
+  const [effectType, setEffectType] = useState(null);
   const [showHint, setShowHint] = useState(false);
-  const [hintUsed, setHintUsed] = useState({}); // {id: true}
-
-  const [results, setResults] = useState([]); // {id, correct: true/false}
-
+  const [hintUsed, setHintUsed] = useState({});
+  const [results, setResults] = useState([]);
   const [quizOver, setQuizOver] = useState(false);
 
-  // 문제 5개 랜덤 추출
+  const [userAnswer, setUserAnswer] = useState("");
+
   useEffect(() => {
     const picked = shuffle(questions).slice(0, 5);
     setQuizList(picked);
   }, []);
 
-  // 타이머
   useEffect(() => {
     if (quizOver) return;
 
     if (timeLeft <= 0) {
-      // 남은 문제들 전부 오답 처리
       finishAllAsWrong();
       return;
     }
@@ -39,132 +38,131 @@ export default function Quiz() {
     return () => clearInterval(t);
   }, [timeLeft, quizOver]);
 
-  // 타이머 0초 → 모두 오답 처리
   const finishAllAsWrong = () => {
-    let remainingResults = [];
-
+    let remaining = [];
     for (let i = currentIndex; i < quizList.length; i++) {
-      remainingResults.push({ id: quizList[i].id, correct: false });
+      remaining.push({ id: quizList[i].id, correct: false });
     }
-
-    setResults(prev => [...prev, ...remainingResults]);
+    setResults(prev => [...prev, ...remaining]);
     setQuizOver(true);
   };
 
-  // 남은 문제 없으면 종료
   const nextQuestion = () => {
     setEffectType(null);
     setShowHint(false);
+    setUserAnswer("");
 
-    if (currentIndex + 1 >= quizList.length) {
-      setQuizOver(true);
-    } else {
-      setCurrentIndex(i => i + 1);
-    }
+    if (currentIndex + 1 >= quizList.length) setQuizOver(true);
+    else setCurrentIndex(i => i + 1);
   };
 
-  // 정답 / 오답 처리
-  const handleAnswer = (choice) => {
+  const handleAnswer = (answer) => {
     const current = quizList[currentIndex];
-    const correct = choice === current.answer;
+    const correct = answer === current.answer;
 
     setResults(prev => [...prev, { id: current.id, correct }]);
     setEffectType(correct ? "correct" : "wrong");
 
-    // 오답 → 1분 감소
-    if (!correct) {
-      setTimeLeft(t => Math.max(0, t - 60));
-    }
+    if (!correct) setTimeLeft(t => Math.max(0, t - 60));
 
-    // 1.2초 효과 후 다음 문제
     setTimeout(() => nextQuestion(), 1200);
   };
 
-  // 시간 표시 형식 함수
+  const checkAnswer = () => {
+    if (!userAnswer.trim()) return;
+    handleAnswer(userAnswer.trim());
+  };
+
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const params = new URLSearchParams(location.search);
+  const studentId = params.get("student_id");
+  const name = params.get("name");
+
+  // 필수 값 없으면 홈으로 튕겨냄
+  useEffect(() => {
+    if (!studentId || !name) {
+      navigate("/");
+    }
+  }, [studentId, name, navigate]);
+
+  
   if (quizList.length === 0) return <p>로딩 중...</p>;
 
-  // ---------------------------
-  // 결과 페이지
-  // ---------------------------
   if (quizOver) {
     const correctCount = results.filter(r => r.correct).length;
     const hintCount = Object.keys(hintUsed).length;
     const snackCount = (correctCount - hintCount) * 3;
 
     return (
-      <div style={{ padding: 24 }}>
+      <div className={styles.container}>
         <h1>결과</h1>
         <h2>총 점수: {correctCount} / {quizList.length}</h2>
 
-        <h3>문항별 결과</h3>
         <ul>
           {results.map(r => (
-            <li key={r.id}>
-              문제 {r.id}: {r.correct ? "정답" : "오답"}
-            </li>
+            <li key={r.id}>문제 {r.id}: {r.correct ? "정답" : "오답"}</li>
           ))}
         </ul>
-        <h3>힌트 사용: {hintCount}회</h3>
-        <h3>관리자에게 간식 {snackCount}개를 수령하세요.</h3>
+
+        <h3>힌트: {hintCount}</h3>
+        <h3>간식: {snackCount}개</h3>
       </div>
     );
   }
 
   const current = quizList[currentIndex];
+  const timerPercent = (timeLeft / TOTAL_TIME) * 100;
 
   return (
-    <div style={{ position: "relative", padding: 24 }}>
-      <h2>남은 시간: {formatTime(timeLeft)}</h2>
+    <div className={styles.container}>
+      <div className={styles.timer}>남은 시간: {formatTime(timeLeft)}</div>
+
+      <div className={styles.timerBar}>
+        <div
+          className={styles.timerBarFill}
+          style={{ width: timerPercent + "%" }}
+        />
+      </div>
+
       <h3>문제 {currentIndex + 1} / {quizList.length}</h3>
 
-      <img
-        src={current.image}
-        alt="문제 이미지"
-        style={{ width: "300px", marginBottom: 16 }}
+      <img src={current.image} className={styles.questionImage} />
+
+      <input
+        className={styles.input}
+        type="text"
+        placeholder="정답을 입력하세요"
+        value={userAnswer}
+        onChange={e => setUserAnswer(e.target.value)}
       />
 
-      {/* 선택지 */}
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {shuffle(current.choices).map((choice, idx) => (
-          <li key={idx} style={{ marginBottom: 8 }}>
-            <button
-              onClick={() => handleAnswer(choice)}
-              style={{ fontSize: 16, padding: "8px 16px" }}
-            >
-              {choice}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <button className={`${styles.button} ${styles.primary}`} onClick={checkAnswer}>
+        제출
+      </button>
 
-      {/* 힌트 */}
       <button
+        className={`${styles.button} ${styles.secondary}`}
         onClick={() => {
           setShowHint(v => !v);
           setHintUsed(prev => ({ ...prev, [current.id]: true }));
         }}
-        style={{ marginTop: 10, fontSize: 15 }}
       >
         힌트 보기
       </button>
 
-      {showHint && (
-        <p style={{ marginTop: 10, fontStyle: "italic" }}>
-          {current.hint}
-        </p>
-        
-      )}
+      {showHint && <div className={styles.hintBox}>{current.hint}</div>}
 
-      {/* 정답/오답 효과 */}
       {effectType && (
-        <div style={overlayStyle}>
-          <div style={boxStyle}>
+        <div className={styles.overlay}>
+          <div className={`${styles.overlayBox} ${styles[effectType]}`}>
             {effectType === "correct" ? "정답!" : "오답!"}
           </div>
         </div>
@@ -172,23 +170,3 @@ export default function Quiz() {
     </div>
   );
 }
-
-// Blur overlay
-const overlayStyle = {
-  position: "absolute",
-  inset: 0,
-  backdropFilter: "blur(4px)",
-  background: "rgba(0,0,0,0.3)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
-
-// Box in the center
-const boxStyle = {
-  padding: "24px 40px",
-  background: "white",
-  borderRadius: "12px",
-  fontSize: "24px",
-  fontWeight: "bold",
-};
