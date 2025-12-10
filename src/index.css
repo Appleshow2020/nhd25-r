@@ -65,12 +65,7 @@
   --ui-font: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica', 'Arial', sans-serif;
 }
 
-html, body, #root {
-  height: 100%;
-}
-
 body {
-  margin: 0;
   font-family: var(--ui-font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

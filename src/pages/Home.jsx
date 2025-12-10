@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
@@ -8,26 +7,20 @@ export default function Home() {
   const [studentId, setStudentId] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
-  const { login } = useAuth();
 
   const startQuiz = () => {
     if (studentId.trim() === "" || name.trim() === "") {
       setError("학번과 이름을 모두 입력해야 합니다.");
       return;
     }
-
-    navigate(`/quiz?student_id=${studentId}&name=${name}`);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login(name, studentId);
-
+    localStorage.setItem("studentId", studentId);
+    localStorage.setItem("name", name);
     if (name === "이준서" && studentId === "20329") {
       navigate("/admin");
     } else {
-      navigate("/user");
+      navigate(`/quiz?student_id=${studentId}&name=${name}`);
     }
+ 
   };
 
   return (

@@ -77,6 +77,50 @@
   animation: fadeIn 1.2s ease both;
 }
 
+.input {
+  width: 360px;
+  padding: 14px 16px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1.5px solid #d0d4e4;
+  background: #fff;
+  outline: none;
+  transition: 0.2s ease;
+  font-family: 'Pretendard', sans-serif;
+  margin-bottom: 14px;
+}
+
+.input:focus {
+  border-color: #4c6ef5;
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.15);
+}
+
+.startButton {
+  width: 360px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  background: #4c6ef5;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+  margin-top: 10px;
+}
+
+.startButton:hover {
+  background: #3b5bdb;
+}
+
+.error {
+  color: #e03131;
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+
 @keyframes fadeUp {
   0% { opacity: 0; transform: translateY(14px); }
   100% { opacity: 1; transform: translateY(0); }

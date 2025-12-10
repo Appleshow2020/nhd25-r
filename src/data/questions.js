@@ -34,5 +34,11 @@ export const questions = [
     image: "/q6.png",
     answer: "30000",
     hint: "가장 좋은 지팡이는 B이다."
-  }
+  },
+  {
+    id: 7,
+    image: "/q7.png",
+    answer: "ㅁ",
+    hint: "이 문제의 이름은 생존자 평향: 비행기 강화의 역설"
+  },
 ];
