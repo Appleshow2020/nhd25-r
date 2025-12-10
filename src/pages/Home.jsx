@@ -8,7 +8,10 @@ export default function Home() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
-  const startQuiz = () => {
+  const startQuiz = (e) => {
+
+    e.preventDefault();
+
     if (studentId.trim() === "" || name.trim() === "") {
       setError("학번과 이름을 모두 입력해야 합니다.");
       return;
